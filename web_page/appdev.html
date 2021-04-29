@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+	<head>
+		<h1>Data show here</h1>
+	</head>
+	
+	<body>
+<!--	Another option
+		<iframe src="record.txt" width="50%" height="200%"></iframe>
+-->
+		<p id="data"></p>
+		<canvas id="chart" style="width:100%;max-width:700px"></canvas>
+		
+		<script>
+			fetch('record.txt').then(response => response.text()).then(data => {
+				<!-- show data in text format  -->
+				console.log(data);
+				var i = j = 0;
+				var new_data = '\0';
+				var min_value = [];
+				var max_value = [];
+				
+				while ((j = data.indexOf('\n', i)) !== -1) {
+				  new_data = new_data + data.substring(i, j) + "<br>";
+				  min_value.push(min(data.substring(i, j)));
+				  max_value.push(max(data.substring(i, j)));
+				  i = j + 1;
+				}
+				document.getElementById("data").innerHTML = new_data;
+				show_chart(min_value, max_value);
+				
+			});	
+			<!-- show data in graph format  -->
+			function show_chart(min, max){
+				var xLabels = [1,2,3,4,5,6,7,8,9,10];
+				new Chart("chart", {
+					type: "line",
+				    data: {
+				    	labels: xLabels,
+				    	datasets: [{
+				      		borderColor: "red",
+				        	fill: false,
+				            data: min
+				        },{
+				        	borderColor: "green",
+				        	fill: false,
+				        	data: max
+				        }]
+				    },
+				    options: {
+				    	legend: {display: false},
+				        scales: {
+				        	yAxes: [{ticks: {min: 0, max:100}}],
+				        	xAxes: [{ticks: {min: 0, max:100}}]
+				        }
+				    }
+				});
+			}
+			
+			function min(data){
+				var k = 0;
+				var l = 0;
+				var count = 0;
+				while((k = data.indexOf(',', l)) !==-1){
+				    if(count == 1){ 
+				        data.substring(l, k).replace(" ", "");
+				        return data.substring(l, k);
+				    }
+				    count++;
+				    l = k+1;
+				}
+			}
+			function max(data){
+                var k = 0;
+                var l = 0;
+                var count = 0;
+                while((k = data.indexOf(',', l)) !==-1){
+                    if(count == 2){
+                    	data.substring(l, k).replace(" ", "");
+                    	return data.substring(l, k);
+                    }
+                    count++;
+                    l = k+1;
+                }
+			}
+		</script>
+	</body>
+</html>
